@@ -414,12 +414,11 @@ void cTrial::updateGraphics(int a_width, int a_height)
 	// update position of label
 	labelRates->setLocalPos((int)(0.5 * (a_width - labelRates->getWidth())), 100);
 	string visualStr;
-	if (flagVisual & flagBox)
-		visualStr = "soft box";
-	else if (flagBox)
-		visualStr = "rigid box";
-	else
-		visualStr = "no box";
+	if (flagBoundary)
+		visualStr = "boundary";
+	else 
+		visualStr = "no boundary";
+
 	labelHaptics->setText(cStr((double const)kHandle, 0) + " kHandle [N/m] \n " +
 		cStr((double const)kSpring, 0) + " kSpring [N/m] \n" + visualStr);
 
@@ -614,8 +613,8 @@ void cTrial::updateHaptics()
 		if (nContact == 2)
 		{
 			gap = (m_tool0->m_hapticPointFinger->m_sphereGoal->getLocalPos() - m_tool0->m_hapticPointThumb->m_sphereGoal->getLocalPos()).length();
-		//	if (gap < boxSize)
-				flagLoad = true;
+			//	if (gap < boxSize)
+			flagLoad = true;
 		}
 		else
 		{
@@ -647,10 +646,10 @@ void cTrial::updateHaptics()
 	simClock.start();
 	if (flagLoad)
 	{
-		loadForce -= (m_ODEBody1->getGlobalPos().z() - (boxSize / 2) - downTarget)* kSpring;
+		loadForce -= (m_ODEBody1->getGlobalPos().z() - kBoundary)* kSpring;
 		if (loadForce > 0)
 			loadForce = 0;
-			//m_ODEBody1->addExternalForceAtPoint(cVector3d(0.0, 0.0, -0 * (m_ODEBody1->getLocalPos().z()) - boxSize / 2), m_ODEBody1->getLocalPos());
+		//m_ODEBody1->addExternalForceAtPoint(cVector3d(0.0, 0.0, -0 * (m_ODEBody1->getLocalPos().z()) - boxSize / 2), m_ODEBody1->getLocalPos());
 	}
 	//loadForce -= (m_ODEBody1->getGlobalPos().z())* kSpring;
 
@@ -705,8 +704,8 @@ void cTrial::initTrial()
 	kBoundary = boundaryCond[trialNumber];
 	if (flagBoundary)
 	{
-		kBoundary = (upTarget + downTarget) / 2;
-		kSpring = springCond[trialNumber];
+		kBoundary = (boxSize / 2) + (upTarget + 2 * downTarget) / 3;
+		kSpring = 2 * springCond[trialNumber];
 	}
 	else
 	{
