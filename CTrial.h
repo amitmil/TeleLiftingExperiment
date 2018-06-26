@@ -202,7 +202,7 @@ public:
 	double boundary = 0.05;
 	bool loggingRunning = false;
 
-
+	bool flagBoundary = false;
 	/*--------------------------------------------------------------------*/
 	/* EXPERIMENT RELATED STUFF */
 
