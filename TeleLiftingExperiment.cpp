@@ -65,7 +65,7 @@ using namespace std;
 	C_STEREO_PASSIVE_TOP_BOTTOM:  Passive stereo where L
 	images are rendered above each other
 */
-cStereoMode stereoMode = C_STEREO_PASSIVE_LEFT_RIGHT;
+cStereoMode stereoMode = C_STEREO_DISABLED;
 
 // fullscreen mode
 bool fullscreen = false;
@@ -179,7 +179,12 @@ int main(int argc, char* argv[])
 	cout << "26/06/2018:" << endl;
 	cout << "-----------------------------------" << endl << endl << endl;
 	cout << "Keyboard Options:" << endl << endl;
-	cout << "[1] - Select Demo 1" << endl;
+	cout << "[s] - Switch Stereo Mode" << endl;
+	cout << "[b] - Switch Boundary ON/OFF" << endl;
+	cout << "[-] - Make Handle Stiffer" << endl;
+	cout << "[+] - Make Handle Softter" << endl;
+	cout << "[P_UP] - Make Spring Stiffer" << endl;
+	cout << "[P_DN] - Make Spring Softter" << endl;
 	cout << "[q] - Exit application" << endl;
 	cout << "-----------------------------------" << endl;
 	cout << endl << endl;
@@ -462,6 +467,17 @@ void keyCallback(GLFWwindow* a_window, int a_key, int a_scancode, int a_action, 
 		m_trial->m_mirroredDisplay = mirroredDisplay;
 
 	}
+	else if (a_key == GLFW_KEY_S) // option - toggle stereo mode
+	{
+		if (m_trial->m_camera->getStereoMode() == C_STEREO_DISABLED)
+			m_trial->m_camera->setStereoMode(C_STEREO_PASSIVE_LEFT_RIGHT);
+		else
+			m_trial->m_camera->setStereoMode(C_STEREO_DISABLED);
+	}
+	else if (a_key == GLFW_KEY_B) // option - toggle stereo mode
+	{
+		m_trial->flagBoundary = !m_trial->flagBoundary;
+	}
 	else if (a_key == GLFW_KEY_KP_ADD)
 		m_trial->kHandle += 50;
 	else if (a_key == GLFW_KEY_KP_SUBTRACT)
@@ -471,32 +487,28 @@ void keyCallback(GLFWwindow* a_window, int a_key, int a_scancode, int a_action, 
 	else if (a_key == GLFW_KEY_PAGE_UP)
 		m_trial->kSpring += 50;
 
-	else if (a_key == GLFW_KEY_INSERT)
+	else if (a_key == GLFW_KEY_DELETE)
 	{
 		m_trial->scope->setShowEnabled(false);
 		m_trial->scope2->setShowEnabled(false);
 		m_trial->labelHaptics->setShowEnabled(false);
+		m_trial->labelRates->setShowEnabled(false);
+
 		/*m_trial->flagVisual = !m_trial->flagVisual;
 		m_trial->m_tool0->m_hapticPointFinger->setShow(!m_trial->flagVisual, m_trial->flagVisual);
 		m_trial->m_tool0->m_hapticPointThumb->setShow(!m_trial->flagVisual, m_trial->flagVisual);*/
 	}
-	else if (a_key == GLFW_KEY_DELETE)
+	else if (a_key == GLFW_KEY_INSERT)
 	{
 		m_trial->scope->setShowEnabled(true);
 		m_trial->scope2->setShowEnabled(true);
 		m_trial->labelHaptics->setShowEnabled(true);
+		m_trial->labelRates->setShowEnabled(true);
+
 		/*m_trial->flagBox = !m_trial->flagBox;
 		m_trial->m_tool0->m_hapticPointFinger->setShow(!m_trial->flagVisual &  m_trial->flagBox, m_trial->flagVisual & m_trial->flagBox);
 		m_trial->m_tool0->m_hapticPointThumb->setShow(!m_trial->flagVisual &  m_trial->flagBox, m_trial->flagVisual & m_trial->flagBox);
 		m_trial->box->setShowEnabled(m_trial->flagBox);*/
-	}
-	else if (a_key == GLFW_KEY_5)
-	{
-
-
-
-
-
 	}
 }
 
@@ -512,8 +524,11 @@ void close(void)
 
 	// delete resources
 	delete hapticsThread;
+	delete protocolThread;
+	delete loggingThread;
 	delete m_trial;
 	delete handler;
+	
 }
 
 //---------------------------------------------------------------------------

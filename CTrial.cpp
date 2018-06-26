@@ -284,6 +284,8 @@ cTrial::cTrial(const string a_resourceRoot,
 	scope->setShowPanel(true);
 	scope->m_colorSignal0.setRedCrimson();
 	scope->m_colorSignal1.setGreen();
+	scope->setShowEnabled(false);
+
 	scope2 = new cScope();
 	m_camera->m_frontLayer->addChild(scope2);
 	scope2->setSize(300, 200);
@@ -292,13 +294,16 @@ cTrial::cTrial(const string a_resourceRoot,
 	scope2->setShowPanel(true);
 	scope2->m_colorSignal0.setBlue();
 	scope2->m_colorSignal1.setGreen();
+	scope2->setShowEnabled(false);
 
 	// create a font
 	font = NEW_CFONTCALIBRI72();
 	// create a label to display the haptic and graphic rate of the simulation
 	labelRates = new cLabel(font);
 	m_camera->m_frontLayer->addChild(labelRates);
+	labelRates->setShowEnabled(false);
 	labelHaptics = new cLabel(font);
+	labelHaptics->setShowEnabled(false);
 	m_camera->m_frontLayer->addChild(labelHaptics);
 	labelTrialInfo = new cLabel(font);
 	labelTrialInfo->m_fontColor = cColorf(1.0, 0.0, 0.0);
@@ -642,10 +647,10 @@ void cTrial::updateHaptics()
 	simClock.start();
 	if (flagLoad)
 	{
-		loadForce -= (m_ODEBody1->getGlobalPos().z() - (boxSize / 2))* kSpring;
-	/*	if (loadForce > 0)
+		loadForce -= (m_ODEBody1->getGlobalPos().z() - (boxSize / 2) - downTarget)* kSpring;
+		if (loadForce > 0)
 			loadForce = 0;
-			m_ODEBody1->addExternalForceAtPoint(cVector3d(0.0, 0.0, -0 * (m_ODEBody1->getLocalPos().z()) - boxSize / 2), m_ODEBody1->getLocalPos());*/
+			//m_ODEBody1->addExternalForceAtPoint(cVector3d(0.0, 0.0, -0 * (m_ODEBody1->getLocalPos().z()) - boxSize / 2), m_ODEBody1->getLocalPos());
 	}
 	//loadForce -= (m_ODEBody1->getGlobalPos().z())* kSpring;
 
@@ -698,7 +703,16 @@ void cTrial::initTrial()
 	m_ODEBody1->m_material->setStiffness(kHandle);
 	kVisual = visualCond[trialNumber];
 	kBoundary = boundaryCond[trialNumber];
-	kBoundary = boxSize / 2;
+	if (flagBoundary)
+	{
+		kBoundary = (upTarget + downTarget) / 2;
+		kSpring = springCond[trialNumber];
+	}
+	else
+	{
+		kBoundary = boxSize / 2;
+		kSpring = springCond[trialNumber];
+	}
 	//m_boundary->setLocalPos(0.0, 0.0, kBoundary);
 	if (kVisual == 1 || kVisual == 3) // rigid cube
 	{
