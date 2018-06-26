@@ -1,43 +1,43 @@
 //===========================================================================
 /*
-    Software License Agreement (BSD License)
-    Copyright (c) 2003-2016, CHAI3D
-    (www.chai3d.org)
+	Software License Agreement (BSD License)
+	Copyright (c) 2003-2016, CHAI3D
+	(www.chai3d.org)
 
-    All rights reserved.
+	All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without
-    modification, are permitted provided that the following conditions
-    are met:
+	Redistribution and use in source and binary forms, with or without
+	modification, are permitted provided that the following conditions
+	are met:
 
-    * Redistributions of source code must retain the above copyright
-    notice, this list of conditions and the following disclaimer.
+	* Redistributions of source code must retain the above copyright
+	notice, this list of conditions and the following disclaimer.
 
-    * Redistributions in binary form must reproduce the above
-    copyright notice, this list of conditions and the following
-    disclaimer in the documentation and/or other materials provided
-    with the distribution.
+	* Redistributions in binary form must reproduce the above
+	copyright notice, this list of conditions and the following
+	disclaimer in the documentation and/or other materials provided
+	with the distribution.
 
-    * Neither the name of CHAI3D nor the names of its contributors may
-    be used to endorse or promote products derived from this software
-    without specific prior written permission.
+	* Neither the name of CHAI3D nor the names of its contributors may
+	be used to endorse or promote products derived from this software
+	without specific prior written permission.
 
-    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-    "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-    LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
-    FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
-    COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
-    INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
-    BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-    CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
-    LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
-    ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-    POSSIBILITY OF SUCH DAMAGE. 
+	THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+	"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+	LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+	FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+	COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+	INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+	BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+	LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+	CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+	LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+	ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+	POSSIBILITY OF SUCH DAMAGE.
 
-    \author    <http://www.chai3d.org>
-    \author    Francois Conti
-    \version   3.2.0 $Rev: 2007 $
+	\author    <http://www.chai3d.org>
+	\author    Francois Conti
+	\version   3.2.0 $Rev: 2007 $
 */
 //===========================================================================
 
@@ -59,10 +59,11 @@ using namespace std;
 
 // stereo Mode
 /*
-    C_STEREO_DISABLED:            Stereo is disabled
-    C_STEREO_ACTIVE:              Active stereo for OpenGL NVDIA QUADRO cards
-    C_STEREO_PASSIVE_LEFT_RIGHT:  Passive stereo where L/R images are rendered next to each other
-    C_STEREO_PASSIVE_TOP_BOTTOM:  Passive stereo where L/R images are rendered above each other
+	C_STEREO_DISABLED:            Stereo is disabled
+	C_STEREO_ACTIVE:              Active stereo for OpenGL NVDIA QUADRO cards
+	C_STEREO_PASSIVE_LEFT_RIGHT:  Passive stereo where L/R images are rendered next to each other
+	C_STEREO_PASSIVE_TOP_BOTTOM:  Passive stereo where L
+	images are rendered above each other
 */
 cStereoMode stereoMode = C_STEREO_PASSIVE_LEFT_RIGHT;
 
@@ -156,169 +157,173 @@ void initDemo1();
 
 //===========================================================================
 /*
-    DEMO:    06-ODE-explorations.cpp
+	DEMO:    06-ODE-explorations.cpp
 
-    This example illustrates the use of the ODE framework for simulating
-    haptic interaction with dynamic bodies. 
+	This example illustrates the use of the ODE framework for simulating
+	haptic interaction with dynamic bodies.
  */
-//===========================================================================
+ //===========================================================================
 
 int main(int argc, char* argv[])
 {
-    //-----------------------------------------------------------------------
-    // INITIALIZATION
-    //-----------------------------------------------------------------------
+	//-----------------------------------------------------------------------
+	// INITIALIZATION
+	//-----------------------------------------------------------------------
 
-    cout << endl;
-    cout << "-----------------------------------" << endl;
-    cout << "Tele Lifting Experiment" << endl;
-    cout << "Written By:" << endl;
-    cout << "Amit Milstein" << endl;
-	cout << "Last Update:" << endl;
-	cout << "18/06/2018:" << endl;
-    cout << "-----------------------------------" << endl << endl << endl;
-    cout << "Keyboard Options:" << endl << endl;
-    cout << "[1] - Select Demo 1" << endl;
-    cout << "[q] - Exit application" << endl;
+	cout << endl;
 	cout << "-----------------------------------" << endl;
-    cout << endl << endl;
+	cout << "Tele Lifting Experiment" << endl;
+	cout << "Written By:" << endl;
+	cout << "Amit Milstein" << endl;
+	cout << "Last Update:" << endl;
+	cout << "26/06/2018:" << endl;
+	cout << "-----------------------------------" << endl << endl << endl;
+	cout << "Keyboard Options:" << endl << endl;
+	cout << "[1] - Select Demo 1" << endl;
+	cout << "[q] - Exit application" << endl;
+	cout << "-----------------------------------" << endl;
+	cout << endl << endl;
 
-    // parse first arg to try and locate resources
-    string resourceRoot = string(argv[0]).substr(0,string(argv[0]).find_last_of("/\\")+1);
+	// parse first arg to try and locate resources
+	string resourceRoot = string(argv[0]).substr(0, string(argv[0]).find_last_of("/\\") + 1);
 
 
-    //--------------------------------------------------------------------------
-    // OPEN GL - WINDOW DISPLAY
-    //--------------------------------------------------------------------------
+	//--------------------------------------------------------------------------
+	// OPEN GL - WINDOW DISPLAY
+	//--------------------------------------------------------------------------
 
-    // initialize GLFW library
-    if (!glfwInit())
-    {
-        cout << "failed initialization" << endl;
-        cSleepMs(1000);
-        return 1;
-    }
+	// initialize GLFW library
+	if (!glfwInit())
+	{
+		cout << "failed initialization" << endl;
+		cSleepMs(1000);
+		return 1;
+	}
 
-    // set error callback
-    glfwSetErrorCallback(errorCallback);
+	// set error callback
+	glfwSetErrorCallback(errorCallback);
 
-    // compute desired size of window
-    const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-    int w = 0.8 * mode->height;
-    int h = 0.5 * mode->height;
-    int x = 0.5 * (mode->width - w);
-    int y = 0.5 * (mode->height - h);
+	// compute desired size of window
+	const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+	int w = 0.8 * mode->height;
+	int h = 0.5 * mode->height;
+	int x = 0.5 * (mode->width - w);
+	int y = 0.5 * (mode->height - h);
 
-    // set OpenGL version
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+	// set OpenGL version
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
 
-    // set active stereo mode
-    if (stereoMode == C_STEREO_ACTIVE)
-    {
-        glfwWindowHint(GLFW_STEREO, GL_TRUE);
-    }
-    else
-    {
-        glfwWindowHint(GLFW_STEREO, GL_FALSE);
-    }
+	// set active stereo mode
+	if (stereoMode == C_STEREO_ACTIVE)
+	{
+		glfwWindowHint(GLFW_STEREO, GL_TRUE);
+	}
+	else
+	{
+		glfwWindowHint(GLFW_STEREO, GL_FALSE);
+	}
 
-    // create display context
-    window = glfwCreateWindow(w, h, "CHAI3D", NULL, NULL);
-    if (!window)
-    {
-        cout << "failed to create window" << endl;
-        cSleepMs(1000);
-        glfwTerminate();
-        return 1;
-    }
+	// create display context
+	window = glfwCreateWindow(w, h, "CHAI3D", NULL, NULL);
+	if (!window)
+	{
+		cout << "failed to create window" << endl;
+		cSleepMs(1000);
+		glfwTerminate();
+		return 1;
+	}
 
-    // get width and height of window
-    glfwGetWindowSize(window, &width, &height);
+	// get width and height of window
+	glfwGetWindowSize(window, &width, &height);
 
-    // set position of window
-    glfwSetWindowPos(window, x, y);
+	// set position of window
+	glfwSetWindowPos(window, x, y);
 
-    // set key callback
-    glfwSetKeyCallback(window, keyCallback);
+	// set key callback
+	glfwSetKeyCallback(window, keyCallback);
 
-    // set resize callback
-    glfwSetWindowSizeCallback(window, windowSizeCallback);
+	// set resize callback
+	glfwSetWindowSizeCallback(window, windowSizeCallback);
 
-    // set current display context
-    glfwMakeContextCurrent(window);
+	// set current display context
+	glfwMakeContextCurrent(window);
 
-    // sets the swap interval for the current display context
-    glfwSwapInterval(swapInterval);
+	// sets the swap interval for the current display context
+	glfwSwapInterval(swapInterval);
 
-    // initialize GLEW library
+	// initialize GLEW library
 #ifdef GLEW_VERSION
-    if (glewInit() != GLEW_OK)
-    {
-        cout << "failed to initialize GLEW library" << endl;
-        glfwTerminate();
-        return 1;
-    }
+	if (glewInit() != GLEW_OK)
+	{
+		cout << "failed to initialize GLEW library" << endl;
+		glfwTerminate();
+		return 1;
+	}
 #endif
 
 
-    //-----------------------------------------------------------------------
-    // HAPTIC DEVICES 
-    //-----------------------------------------------------------------------
+	//-----------------------------------------------------------------------
+	// HAPTIC DEVICES 
+	//-----------------------------------------------------------------------
 
-    // create a haptic device handler
-    handler = new cHapticDeviceHandler();
+	// create a haptic device handler
+	handler = new cHapticDeviceHandler();
 
-    // get number of haptic devices
-    int numDevices = handler->getNumDevices();
+	// get number of haptic devices
+	int numDevices = handler->getNumDevices();
 
-    // default stiffness of scene objects
-    double maxStiffness = 2000.0;
+	// default stiffness of scene objects
+	double maxStiffness = 2000.0;
 
-    // get access to the haptic devices found
-    if (numDevices > 0)
-    {
-        handler->getDevice(m_hapticDevice0, 0);
-        maxStiffness = cMin(maxStiffness, 0.5 * m_hapticDevice0->getSpecifications().m_maxLinearStiffness);
-    }
+	// get access to the haptic devices found
+	if (numDevices > 0)
+	{
+		handler->getDevice(m_hapticDevice0, 0);
+		maxStiffness = cMin(maxStiffness, 0.5 * m_hapticDevice0->getSpecifications().m_maxLinearStiffness);
+	}
 
-    if (numDevices > 1)
-    {
-        handler->getDevice(m_hapticDevice1, 1);
-        maxStiffness = cMin(maxStiffness, 0.5 * m_hapticDevice1->getSpecifications().m_maxLinearStiffness);
-    }
+	if (numDevices > 1)
+	{
+		handler->getDevice(m_hapticDevice1, 1);
+		maxStiffness = cMin(maxStiffness, 0.5 * m_hapticDevice1->getSpecifications().m_maxLinearStiffness);
+	}
 
- 
-    //-----------------------------------------------------------------------
-    // DEMOS
-    //-----------------------------------------------------------------------
 
-    // setup demos
-    m_trial = new cTrial(resourceRoot, numDevices, m_hapticDevice0, m_hapticDevice1);
+	//-----------------------------------------------------------------------
+	// DEMOS
+	//-----------------------------------------------------------------------
+
+	// setup demos
+	m_trial = new cTrial(resourceRoot, numDevices, m_hapticDevice0, m_hapticDevice1);
 
 	cout << "Please enter Subject's Name:" << endl;
 	cin >> m_trial->subjectName;
 	cout << endl << endl;
-//	m_trial->subjectName = "testing";
+	cout << "Please enter First Trial:" << endl;
+	cin >> m_trial->trialNumber;
+	m_trial->trialNumber -= 1;
+	cout << endl << endl;
+	//	m_trial->subjectName = "testing";
 
-    // set stereo mode
-    m_trial->m_camera->setStereoMode(stereoMode);
+		// set stereo mode
+	m_trial->m_camera->setStereoMode(stereoMode);
 
-    // set object stiffness in demos
-    //m_trial->setStiffness(maxStiffness);
-    
-
-    // initialize demo 1
-    initDemo1();
+	// set object stiffness in demos
+	//m_trial->setStiffness(maxStiffness);
 
 
-    //-----------------------------------------------------------------------
-    // START SIMULATION
-    //-----------------------------------------------------------------------
+	// initialize demo 1
+	initDemo1();
 
-    // create a thread which starts the main haptics rendering loop
-    hapticsThread = new cThread();
-    hapticsThread->start(updateHaptics, CTHREAD_PRIORITY_HAPTICS);
+
+	//-----------------------------------------------------------------------
+	// START SIMULATION
+	//-----------------------------------------------------------------------
+
+	// create a thread which starts the main haptics rendering loop
+	hapticsThread = new cThread();
+	hapticsThread->start(updateHaptics, CTHREAD_PRIORITY_HAPTICS);
 
 	// This is to periodically log data (time, position, force, state) on a buffer
 	loggingThread = new cThread(); // This is to periodically log data (time, position, force, state) on a buffer
@@ -326,43 +331,43 @@ int main(int argc, char* argv[])
 
 	protocolThread = new cThread(); // This is to periodically log data (time, position, force, state) on a buffer
 	protocolThread->start(updateProtocol, CTHREAD_PRIORITY_HAPTICS);
-    // setup callback when application exits
-    atexit(close);
+	// setup callback when application exits
+	atexit(close);
 
 
-    //--------------------------------------------------------------------------
-    // MAIN GRAPHIC LOOP
-    //--------------------------------------------------------------------------
+	//--------------------------------------------------------------------------
+	// MAIN GRAPHIC LOOP
+	//--------------------------------------------------------------------------
 
-    // call window size callback at initialization
-    windowSizeCallback(window, width, height);
+	// call window size callback at initialization
+	windowSizeCallback(window, width, height);
 
-    // main graphic loop
-    while (!glfwWindowShouldClose(window))
-    {
-        // get width and height of window
-        glfwGetWindowSize(window, &width, &height);
+	// main graphic loop
+	while (!glfwWindowShouldClose(window))
+	{
+		// get width and height of window
+		glfwGetWindowSize(window, &width, &height);
 
-        // render graphics
-        updateGraphics();
+		// render graphics
+		updateGraphics();
 
-        // swap buffers
-        glfwSwapBuffers(window);
+		// swap buffers
+		glfwSwapBuffers(window);
 
-        // process events
-        glfwPollEvents();
+		// process events
+		glfwPollEvents();
 		// signal frequency counter
 		m_trial->freqCounterGraphics.signal(1);
-    }
+	}
 
-    // close window
-    glfwDestroyWindow(window);
+	// close window
+	glfwDestroyWindow(window);
 
-    // terminate GLFW library
-    glfwTerminate();
+	// terminate GLFW library
+	glfwTerminate();
 
-    // exit
-    return 0;
+	// exit
+	return 0;
 }
 
 //---------------------------------------------------------------------------
@@ -370,7 +375,7 @@ int main(int argc, char* argv[])
 void initDemo1()
 {
 
-  //  m_trial->init();
+	//  m_trial->init();
 }
 
 //---------------------------------------------------------------------------
@@ -381,9 +386,9 @@ void initDemo1()
 
 void windowSizeCallback(GLFWwindow* a_window, int a_width, int a_height)
 {
-    // update window size
-    width  = a_width;
-    height = a_height;
+	// update window size
+	width = a_width;
+	height = a_height;
 	// update position of scope
 	m_trial->scope->setLocalPos((0.05 * (width - m_trial->scope->getWidth())), 120);
 	m_trial->scope2->setLocalPos((0.05 * (width - m_trial->scope->getWidth())), 400);
@@ -393,7 +398,7 @@ void windowSizeCallback(GLFWwindow* a_window, int a_width, int a_height)
 
 void errorCallback(int a_error, const char* a_description)
 {
-    cout << "Error: " << a_description << endl;
+	cout << "Error: " << a_description << endl;
 }
 
 //---------------------------------------------------------------------------
@@ -480,15 +485,15 @@ void keyCallback(GLFWwindow* a_window, int a_key, int a_scancode, int a_action, 
 		m_trial->scope->setShowEnabled(true);
 		m_trial->scope2->setShowEnabled(true);
 		m_trial->labelHaptics->setShowEnabled(true);
-	/*m_trial->flagBox = !m_trial->flagBox;
-	m_trial->m_tool0->m_hapticPointFinger->setShow(!m_trial->flagVisual &  m_trial->flagBox, m_trial->flagVisual & m_trial->flagBox);
-	m_trial->m_tool0->m_hapticPointThumb->setShow(!m_trial->flagVisual &  m_trial->flagBox, m_trial->flagVisual & m_trial->flagBox);
-	m_trial->box->setShowEnabled(m_trial->flagBox);*/
+		/*m_trial->flagBox = !m_trial->flagBox;
+		m_trial->m_tool0->m_hapticPointFinger->setShow(!m_trial->flagVisual &  m_trial->flagBox, m_trial->flagVisual & m_trial->flagBox);
+		m_trial->m_tool0->m_hapticPointThumb->setShow(!m_trial->flagVisual &  m_trial->flagBox, m_trial->flagVisual & m_trial->flagBox);
+		m_trial->box->setShowEnabled(m_trial->flagBox);*/
 	}
 	else if (a_key == GLFW_KEY_5)
 	{
-	
-	
+
+
 
 
 
@@ -499,16 +504,16 @@ void keyCallback(GLFWwindow* a_window, int a_key, int a_scancode, int a_action, 
 
 void close(void)
 {
-    // stop the simulation
-    simulationRunning = false;
+	// stop the simulation
+	simulationRunning = false;
 
-    // wait for graphics and haptics loops to terminate
-    while (!simulationFinished) { cSleepMs(100); }
+	// wait for graphics and haptics loops to terminate
+	while (!simulationFinished) { cSleepMs(100); }
 
-    // delete resources
-    delete hapticsThread;
-    delete m_trial;
-    delete handler;
+	// delete resources
+	delete hapticsThread;
+	delete m_trial;
+	delete handler;
 }
 
 //---------------------------------------------------------------------------
@@ -516,43 +521,43 @@ void close(void)
 void updateGraphics(void)
 {
 
-    // render world
-    m_trial->updateGraphics(width, height);
+	// render world
+	m_trial->updateGraphics(width, height);
 
-    // wait until all GL commands are completed
-    glFinish();
+	// wait until all GL commands are completed
+	glFinish();
 
-    // check for any OpenGL errors
-    GLenum err = glGetError();
-    if (err != GL_NO_ERROR) printf("Error:  %s\n", gluErrorString(err));
+	// check for any OpenGL errors
+	GLenum err = glGetError();
+	if (err != GL_NO_ERROR) printf("Error:  %s\n", gluErrorString(err));
 }
 
 //---------------------------------------------------------------------------
 
 void updateHaptics(void)
 {
-    // simulation in now running
-    simulationRunning = true;
-    simulationFinished = false;
+	// simulation in now running
+	simulationRunning = true;
+	simulationFinished = false;
 
-    // main haptic simulation loop
-    while(simulationRunning)
-    {
-        m_trial->updateHaptics();
-    }
+	// main haptic simulation loop
+	while (simulationRunning)
+	{
+		m_trial->updateHaptics();
+	}
 
-    // shutdown haptic devices
-    if (m_trial->m_tool0 != NULL)
-    {
-        m_trial->m_tool0->stop();
-    }
-    if (m_trial->m_tool1 != NULL)
-    {
-        m_trial->m_tool1->stop();
-    }
+	// shutdown haptic devices
+	if (m_trial->m_tool0 != NULL)
+	{
+		m_trial->m_tool0->stop();
+	}
+	if (m_trial->m_tool1 != NULL)
+	{
+		m_trial->m_tool1->stop();
+	}
 
-    // exit haptics thread
-    simulationFinished = true;
+	// exit haptics thread
+	simulationFinished = true;
 }
 void updateLogging(void)
 {

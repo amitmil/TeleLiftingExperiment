@@ -219,8 +219,8 @@ public:
 	int kHandle = 200;
 	int kVisual = 1;
 	double kBoundary;
-	double upTarget = 0.08;
-	double downTarget = 0.04;
+	double upTarget = 0.12;
+	double downTarget = 0.06;
 	cMesh* m_downTarget;
 	cMesh* m_upTarget;
 	cMesh* m_boundary;

@@ -159,10 +159,10 @@ cTrial::cTrial(const string a_resourceRoot,
 		printf("Error - 3D Model failed to load correctly.\n");
 	}
 
-	m_base->scale(0.005);
+	m_base->scale(0.003);
 	m_base->setShowFrame(false);
 	m_base->setShowBoundaryBox(false);
-	m_base->setLocalPos(-0.05, 0.0, 0.001);
+	m_base->setLocalPos(-0.05, 0.0, 0.0);
 	m_base->setUseDisplayList(true);
 
 	m_upTarget = new cMesh();
@@ -609,7 +609,7 @@ void cTrial::updateHaptics()
 		if (nContact == 2)
 		{
 			gap = (m_tool0->m_hapticPointFinger->m_sphereGoal->getLocalPos() - m_tool0->m_hapticPointThumb->m_sphereGoal->getLocalPos()).length();
-			if (gap < boxSize)
+		//	if (gap < boxSize)
 				flagLoad = true;
 		}
 		else
@@ -623,7 +623,7 @@ void cTrial::updateHaptics()
 		flagChangeBox = true;
 	else
 		flagChangeBox = false;
-
+	//scout << m_ODEBody1->getLocalPos().z() << "\r";
 	m_ODEBody1->setLocalPos(0.0, 0.0, m_ODEBody1->getLocalPos().z());
 	cMatrix3d rot;
 	rot.identity();
@@ -642,8 +642,10 @@ void cTrial::updateHaptics()
 	simClock.start();
 	if (flagLoad)
 	{
-		loadForce -= (m_ODEBody1->getGlobalPos().z() - boxSize / 2)* kSpring;
-		//	m_ODEBody1->addExternalForceAtPoint(cVector3d(0.0, 0.0, -0 * (m_ODEBody1->getLocalPos().z()) - boxSize / 2), m_ODEBody1->getLocalPos());
+		loadForce -= (m_ODEBody1->getGlobalPos().z() - (boxSize / 2))* kSpring;
+	/*	if (loadForce > 0)
+			loadForce = 0;
+			m_ODEBody1->addExternalForceAtPoint(cVector3d(0.0, 0.0, -0 * (m_ODEBody1->getLocalPos().z()) - boxSize / 2), m_ODEBody1->getLocalPos());*/
 	}
 	//loadForce -= (m_ODEBody1->getGlobalPos().z())* kSpring;
 
@@ -684,7 +686,7 @@ void cTrial::setTorqueGain(double a_torqueGain)
 void cTrial::initTrial()
 {
 	// set starting position of cube and its color
-	labelTrialInfo->setText(cStr(trialNumber));
+	labelTrialInfo->setText(cStr(trialNumber + 1));
 	cVector3d tmpvct;
 	m_ODEBody1->setLocalPos(0.00, 0.00, boxSize / 2);
 	box->m_material->setRed();
@@ -720,8 +722,8 @@ void cTrial::initTrial()
 }
 void cTrial::updateProtocol()
 {
-	if (expState < 3)
-		cout << "exp: " << expState << " trial: " << trialState << "\r";
+	//if (expState < 3)
+	//	cout << "exp: " << expState << " trial: " << trialState << "\r";
 	switch (expState)
 	{
 	case 1: // Setup Next Trial
@@ -730,7 +732,7 @@ void cTrial::updateProtocol()
 			labelTrialInstructions->setText("Align the middle\n of the cube with\n the bottom target");
 		}
 		initTrial();
-		cout << endl << "starting Trial: " << trialNumber << endl << endl;
+		cout << endl << "starting Trial: " << trialNumber + 1 << endl << endl;
 		expState += 1;
 
 		break;
@@ -854,7 +856,7 @@ void cTrial::updateLogging(void)
 	string filename;
 	char trialString[3];
 	double time;
-	itoa(trialNumber, trialString, 10);
+	itoa(trialNumber + 1, trialString, 10);
 	filename = +"dataLogs\\" + subjectName + "_trial_" + trialString + ".txt";
 	/*sprintf(filename, sprintf("%c_trial_%i.txt",subjectName,trialNumber)*/
 	std::ofstream trialFile;
