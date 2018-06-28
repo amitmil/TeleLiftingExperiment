@@ -713,14 +713,14 @@ void cTrial::initTrial()
 	if (flagBoundary)
 	{
 		kBoundary = (boxSize / 2) + (upTarget + 4 * downTarget) / 5;
-		kSpring = 2 * springCond[trialNumber];
-		m_boundary->setShowEnabled(true);
+		kSpring = 2 * (springCond[trialNumber] - 40);
+		m_boundary->setShowEnabled(false);
 		m_boundary->setLocalPos(cVector3d(0.0,0.0,kBoundary));
 	}
 	else
 	{
 		kBoundary = boxSize / 2;
-		kSpring = springCond[trialNumber];
+		kSpring = springCond[trialNumber] - 40;
 		m_boundary->setShowEnabled(false);
 	}
 	//m_boundary->setLocalPos(0.0, 0.0, kBoundary);

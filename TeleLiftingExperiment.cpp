@@ -349,6 +349,9 @@ int main(int argc, char* argv[])
 	cout << "Please enter First Trial:" << endl;
 	cin >> m_trial->trialNumber;
 	m_trial->trialNumber -= 1;
+
+	cout << "Boundary condition (1/0):" << endl;
+	cin >> m_trial->flagBoundary;
 	cout << endl << endl;
 	//	m_trial->subjectName = "testing";
 
@@ -534,7 +537,7 @@ void keyCallback(GLFWwindow* a_window, int a_key, int a_scancode, int a_action, 
 		m_trial->scope2->setShowEnabled(false);
 		m_trial->labelHaptics->setShowEnabled(false);
 		m_trial->labelRates->setShowEnabled(false);
-
+		m_trial->m_boundary->setShowEnabled(false);
 		/*m_trial->flagVisual = !m_trial->flagVisual;
 		m_trial->m_tool0->m_hapticPointFinger->setShow(!m_trial->flagVisual, m_trial->flagVisual);
 		m_trial->m_tool0->m_hapticPointThumb->setShow(!m_trial->flagVisual, m_trial->flagVisual);*/
@@ -545,7 +548,7 @@ void keyCallback(GLFWwindow* a_window, int a_key, int a_scancode, int a_action, 
 		m_trial->scope2->setShowEnabled(true);
 		m_trial->labelHaptics->setShowEnabled(true);
 		m_trial->labelRates->setShowEnabled(true);
-
+		m_trial->m_boundary->setShowEnabled(true);
 		/*m_trial->flagBox = !m_trial->flagBox;
 		m_trial->m_tool0->m_hapticPointFinger->setShow(!m_trial->flagVisual &  m_trial->flagBox, m_trial->flagVisual & m_trial->flagBox);
 		m_trial->m_tool0->m_hapticPointThumb->setShow(!m_trial->flagVisual &  m_trial->flagBox, m_trial->flagVisual & m_trial->flagBox);
