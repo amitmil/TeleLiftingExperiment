@@ -122,7 +122,42 @@ int height = 0;
 
 // swap interval for the display context (vertical synchronization)
 int swapInterval = 1;
+//------------------------------------------------------------------------------
+// STATES
+//------------------------------------------------------------------------------
+enum MouseState
+{
+	MOUSE_IDLE,
+	MOUSE_LEFT,
+	MOUSE_RIGHT
+};
 
+// a small sphere which displays the position of a click hit in the world
+cShapeSphere* sphereSelect;
+
+// a small line to display the surface normal at the selection point
+cShapeLine* normalSelect;
+
+// a pointer to the selected object
+cGenericObject* selectedObject = NULL;
+
+// offset between the position of the mmouse click on the object and the object reference frame location.
+cVector3d selectedObjectOffset;
+
+// position of mouse click.
+cVector3d selectedPoint;
+
+// mouse position
+double mouseX, mouseY;
+
+// mouse state
+MouseState mouseState = MOUSE_IDLE;
+
+// callback to handle mouse click
+void mouseButtonCallback(GLFWwindow* a_window, int a_button, int a_action, int a_mods);
+
+// callback to handle mouse motion
+void mouseMotionCallback(GLFWwindow* a_window, double a_posX, double a_posY);
 
 //---------------------------------------------------------------------------
 // DECLARED FUNCTIONS
@@ -247,6 +282,12 @@ int main(int argc, char* argv[])
 
 	// set key callback
 	glfwSetKeyCallback(window, keyCallback);
+
+	// set mouse position callback
+	glfwSetCursorPosCallback(window, mouseMotionCallback);
+
+	// set mouse button callback
+	glfwSetMouseButtonCallback(window, mouseButtonCallback);
 
 	// set resize callback
 	glfwSetWindowSizeCallback(window, windowSizeCallback);
@@ -513,6 +554,160 @@ void keyCallback(GLFWwindow* a_window, int a_key, int a_scancode, int a_action, 
 }
 
 //---------------------------------------------------------------------------
+void mouseButtonCallback(GLFWwindow* a_window, int a_button, int a_action, int a_mods)
+{
+	if (a_button == GLFW_MOUSE_BUTTON_LEFT && a_action == GLFW_PRESS)
+	{
+		glfwGetCursorPos(window, &mouseX, &mouseY);
+		mouseState = MOUSE_LEFT;
+		cout << 1 << endl << endl;
+	}
+	else if (a_button == GLFW_MOUSE_BUTTON_RIGHT && a_action == GLFW_PRESS)
+	{
+		glfwGetCursorPos(window, &mouseX, &mouseY);
+		mouseState = MOUSE_RIGHT;
+		cout << 2 << endl << endl;
+	}
+	else
+	{
+		mouseState = MOUSE_IDLE;
+	}
+
+//{
+//	if (a_button == GLFW_MOUSE_BUTTON_LEFT && a_action == GLFW_PRESS)
+//	{
+//		// store mouse position
+//		glfwGetCursorPos(window, &mouseX, &mouseY);
+//
+//		// variable for storing collision information
+//		cCollisionRecorder recorder;
+//		cCollisionSettings settings;
+//
+//		// detect for any collision between mouse and front layer widgets
+//		bool hit = mcamera->selectFrontLayer(mouseX, (height - mouseY), width, height, recorder, settings);
+//		if (hit)
+//		{
+//			// reset all label font colors to white
+//			labelRed->m_fontColor.setWhite();
+//			labelGreen->m_fontColor.setWhite();
+//			labelBlue->m_fontColor.setWhite();
+//			labelOrange->m_fontColor.setWhite();
+//			labelGray->m_fontColor.setWhite();
+//
+//			// check mouse selection
+//			if (recorder.m_nearestCollision.m_object == labelRed)
+//			{
+//				labelRed->m_fontColor.setBlack();
+//				if (selectedObject != NULL)
+//					selectedObject->m_material->setRedCrimson();
+//			}
+//			else if (recorder.m_nearestCollision.m_object == labelGreen)
+//			{
+//				labelGreen->m_fontColor.setBlack();
+//				if (selectedObject != NULL)
+//					selectedObject->m_material->setGreenLightSea();
+//			}
+//			else if (recorder.m_nearestCollision.m_object == labelBlue)
+//			{
+//				labelBlue->m_fontColor.setBlack();
+//				if (selectedObject != NULL)
+//					selectedObject->m_material->setBlueCornflower();
+//			}
+//			else if (recorder.m_nearestCollision.m_object == labelOrange)
+//			{
+//				labelOrange->m_fontColor.setBlack();
+//				if (selectedObject != NULL)
+//					selectedObject->m_material->setOrangeRed();
+//			}
+//			else if (recorder.m_nearestCollision.m_object == labelGray)
+//			{
+//				labelGray->m_fontColor.setBlack();
+//				if (selectedObject != NULL)
+//					selectedObject->m_material->setGrayLight();
+//			}
+//		}
+//		else
+//		{
+//			// detect for any collision between mouse and world
+//			bool hit = camera->selectWorld(mouseX, (height - mouseY), width, height, recorder, settings);
+//			if (hit)
+//			{
+//				sphereSelect->setShowEnabled(true);
+//				normalSelect->setShowEnabled(true);
+//				selectedPoint = recorder.m_nearestCollision.m_globalPos;
+//				sphereSelect->setLocalPos(selectedPoint);
+//				normalSelect->m_pointA.zero();
+//				normalSelect->m_pointB = 0.1 * recorder.m_nearestCollision.m_globalNormal;
+//				selectedObject = recorder.m_nearestCollision.m_object;
+//				selectedObjectOffset = recorder.m_nearestCollision.m_globalPos - selectedObject->getLocalPos();
+//				mouseState = MOUSE_SELECTION;
+//			}
+//		}
+//	}
+
+}
+
+//------------------------------------------------------------------------------
+
+void mouseMotionCallback(GLFWwindow* a_window, double a_posX, double a_posY)
+{
+	if ( (mouseState == MOUSE_LEFT))
+	{
+		// get the vector that goes from the camera to the selected point (mouse click)
+		// position and oriente the camera
+		cVector3d vCameraObject = selectedPoint - m_trial->m_camera->getLocalPos();
+
+		// get the vector that point in the direction of the camera. ("where the camera is looking at")
+		cVector3d vCameraLookAt = m_trial->m_camera->getLookVector();
+
+		// compute the angle between both vectors
+		double angle = cAngle(vCameraObject, vCameraLookAt);
+
+		// compute the distance between the camera and the plane that intersects the object and 
+		// which is parallel to the camera plane
+		double distanceToObjectPlane = vCameraObject.length() * cos(angle);
+
+		// convert the pixel in mouse space into a relative position in the world
+		double factor = (distanceToObjectPlane * tan(0.5 *  m_trial->m_camera->getFieldViewAngleRad())) / (0.5 * height) / 10;
+		double posRelX = factor * (a_posX - (0.5 * width));
+		double posRelY = factor * ((height - a_posY) - (0.5 * height));
+		double posX = factor * (mouseX - (0.5 * width));
+		double posY = factor * ((height - mouseY) - (0.5 * height));
+		cVector3d camPos = m_trial->m_camera->getLocalPos();
+		camPos.add(cVector3d(0.0, posX - posRelX, posY - posRelY));
+		m_trial->m_camera->setLocalPos(camPos);
+		cout << camPos.x() << " :: " << camPos.y() << " : " << camPos.z() << "\r";
+
+	}
+	if ((mouseState == MOUSE_RIGHT))
+	{
+		// get the vector that goes from the camera to the selected point (mouse click)
+		// position and oriente the camera
+		cVector3d vCameraObject = selectedPoint - m_trial->m_camera->getLocalPos();
+
+		// get the vector that point in the direction of the camera. ("where the camera is looking at")
+		cVector3d vCameraLookAt = m_trial->m_camera->getLookVector();
+
+		// compute the angle between both vectors
+		double angle = cAngle(vCameraObject, vCameraLookAt);
+
+		// compute the distance between the camera and the plane that intersects the object and 
+		// which is parallel to the camera plane
+		double distanceToObjectPlane = vCameraObject.length() * cos(angle);
+
+		// convert the pixel in mouse space into a relative position in the world
+		double factor = (distanceToObjectPlane * tan(0.5 *  m_trial->m_camera->getFieldViewAngleRad())) / (0.5 * height) / 10;
+		double posRelX = factor * (a_posX - (0.5 * width));
+		double posRelY = factor * ((height - a_posY) - (0.5 * height));
+		double posX = factor * (mouseX - (0.5 * width));
+		double posY = factor * ((height - mouseY) - (0.5 * height));
+		cVector3d camPos = m_trial->m_camera->getLocalPos();
+		camPos.add(cVector3d(-(posY - posRelY), 0.0 , 0.0));
+		m_trial->m_camera->setLocalPos(camPos);
+		cout << camPos.x() << " :: " << camPos.y() << " : " << camPos.z() << "\r";
+
+	}
+}
 
 void close(void)
 {

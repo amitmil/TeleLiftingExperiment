@@ -181,6 +181,14 @@ cTrial::cTrial(const string a_resourceRoot,
 	m_downTarget->setTransparencyLevel(0.5);
 	m_downTarget->setHapticEnabled(false);
 
+	
+	m_boundary = new cMesh();
+	m_world->addChild(m_boundary);
+	cCreatePlane(m_boundary, boxSize*1.3, boxSize*1.3, cVector3d(0, 0, kBoundary));
+	m_boundary->m_material->setRed();
+	m_boundary->setShowEnabled(false);
+	m_boundary->setTransparencyLevel(0.5);
+	m_boundary->setHapticEnabled(false);
 	/*m_boundary = new cMesh();
 	m_world->addChild(m_boundary);
 	cCreatePlane(m_boundary, 0.01, 0.01, cVector3d(0, 0, boundary));
@@ -704,13 +712,16 @@ void cTrial::initTrial()
 	kBoundary = boundaryCond[trialNumber];
 	if (flagBoundary)
 	{
-		kBoundary = (boxSize / 2) + (upTarget + 2 * downTarget) / 3;
+		kBoundary = (boxSize / 2) + (upTarget + 4 * downTarget) / 5;
 		kSpring = 2 * springCond[trialNumber];
+		m_boundary->setShowEnabled(true);
+		m_boundary->setLocalPos(cVector3d(0.0,0.0,kBoundary));
 	}
 	else
 	{
 		kBoundary = boxSize / 2;
 		kSpring = springCond[trialNumber];
+		m_boundary->setShowEnabled(false);
 	}
 	//m_boundary->setLocalPos(0.0, 0.0, kBoundary);
 	if (kVisual == 1 || kVisual == 3) // rigid cube
