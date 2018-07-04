@@ -556,6 +556,9 @@ void keyCallback(GLFWwindow* a_window, int a_key, int a_scancode, int a_action, 
 		m_trial->m_tool0->m_hapticPointThumb->setShow(!m_trial->flagVisual &  m_trial->flagBox, m_trial->flagVisual & m_trial->flagBox);
 		m_trial->box->setShowEnabled(m_trial->flagBox);*/
 	}
+	else if (a_key == GLFW_KEY_P)
+		m_trial->forceControl = !m_trial->forceControl;
+
 }
 
 //---------------------------------------------------------------------------

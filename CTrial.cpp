@@ -255,6 +255,22 @@ cTrial::cTrial(const string a_resourceRoot,
 		m_tool1->m_hapticPointFinger->m_sphereProxy->addChild(mesh1);
 	}
 
+	
+	meshForceFinger = new cMesh();
+	cCreateRing(meshForceFinger, 0.001, 0.005, 4, 16, cVector3d(0, 0, 0), rot);
+	meshForceFinger->m_material->setWhite();
+	meshForceFinger->setTransparencyLevel(0.4f);
+	m_world->addChild(meshForceFinger);
+	meshForceFinger->setShowEnabled(false);
+	meshForceFinger->setHapticEnabled(false);
+	meshForceThumb = new cMesh();
+	cCreateRing(meshForceThumb, 0.001, 0.005, 4, 16, cVector3d(0, 0, 0), rot);
+	meshForceThumb->m_material->setWhite();
+	meshForceThumb->setTransparencyLevel(0.4f);
+	m_world->addChild(meshForceThumb);
+	meshForceThumb->setShowEnabled(false);
+	meshForceThumb->setHapticEnabled(false);
+
 	// create an ODE world to simulate dynamic bodies
 	m_ODEWorld = new cODEWorld(m_world);
 	m_world->addChild(m_ODEWorld);
@@ -427,8 +443,14 @@ void cTrial::updateGraphics(int a_width, int a_height)
 	else 
 		visualStr = "no boundary";
 
+	string controlStr;
+	if (forceControl)
+		visualStr = "force control";
+	else
+		visualStr = "position control";
+
 	labelHaptics->setText(cStr((double const)kHandle, 0) + " kHandle [N/m] \n " +
-		cStr((double const)kSpring, 0) + " kSpring [N/m] \n" + visualStr);
+		cStr((double const)kSpring, 0) + " kSpring [N/m] \n" + visualStr + "\n" + controlStr);
 
 
 	// update position of label
@@ -442,11 +464,33 @@ void cTrial::updateGraphics(int a_width, int a_height)
 	{
 		box->setSize(boxSize, gap, boxSize);
 		box2->setSize(boxSize*1.01, gap*1.01, boxSize / 10);
+		if (forceControl)
+		{
+			meshForceThumb->setShowEnabled(true);
+			meshForceFinger->setShowEnabled(true);
+			m_tool0->m_hapticPointFinger->m_sphereGoal->setShowEnabled(false);
+			m_tool0->m_hapticPointThumb->m_sphereGoal->setShowEnabled(false);
 
+			//cout << "hello";
+			/*m_tool0->m_hapticPointFinger->m_sphereGoal->setLocalPos(m_tool0->m_hapticPointFinger->m_sphereGoal->getLocalPos().x(), gap / 2 + m_ODEBody1->getLocalPos().y(), m_tool0->m_hapticPointFinger->m_sphereGoal->getLocalPos().z());
+			m_tool0->m_hapticPointThumb->m_sphereGoal->setLocalPos(m_tool0->m_hapticPointThumb->m_sphereGoal->getLocalPos().x(), m_ODEBody1->getLocalPos().y() - gap / 2, m_tool0->m_hapticPointThumb->m_sphereGoal->getLocalPos().z());*/
+		}
+		else
+		{
+			meshForceThumb->setShowEnabled(false);
+			meshForceFinger->setShowEnabled(false);
+		
+		}
 		//cout << gap << endl;
 	}
 	else
 	{
+		if (forceControl)
+		{
+			meshForceThumb->setShowEnabled(false);
+			meshForceFinger->setShowEnabled(false);
+
+		}
 		box->setSize(boxSize, boxSize, boxSize);
 		box2->setSize(boxSize*1.01, boxSize*1.01, boxSize / 10);
 	}
@@ -620,12 +664,32 @@ void cTrial::updateHaptics()
 		}
 		if (nContact == 2)
 		{
-			gap = (m_tool0->m_hapticPointFinger->m_sphereGoal->getLocalPos() - m_tool0->m_hapticPointThumb->m_sphereGoal->getLocalPos()).length();
+			/*if (forceControl)
+				m_tool0->setGripperWorkspaceScale(m_ODEBody1->m_material->getStiffness() / kHandle);
+			gap = (m_tool0->m_hapticPointFinger->m_sphereGoal->getLocalPos() - m_tool0->m_hapticPointThumb->m_sphereGoal->getLocalPos()).length();*/
+			
+			if (!forceControl)
+			{
+				gap = (m_tool0->m_hapticPointFinger->m_sphereGoal->getLocalPos() - m_tool0->m_hapticPointThumb->m_sphereGoal->getLocalPos()).length();
+				meshForceThumb->setLocalPos(m_tool0->m_hapticPointThumb->m_sphereGoal->getGlobalPos());
+				meshForceFinger->setLocalPos(m_tool0->m_hapticPointFinger->m_sphereGoal->getGlobalPos());
+			}
+			else
+			{	
+				gap = (m_tool0->m_hapticPointFinger->m_sphereGoal->getLocalPos() - m_tool0->m_hapticPointThumb->m_sphereGoal->getLocalPos()).length();
+				gap = boxSize+	m_ODEBody1->m_material->getStiffness() / kHandle *(gap-boxSize);
+				meshForceThumb->setLocalPos(cVector3d(m_tool0->m_hapticPointThumb->m_sphereGoal->getLocalPos().x(), m_ODEBody1->getLocalPos().y() - gap / 2, m_tool0->m_hapticPointThumb->m_sphereProxy->getLocalPos().z()+ 0.1));
+				meshForceFinger->setLocalPos(m_tool0->m_hapticPointFinger->m_sphereGoal->getGlobalPos().x(), gap / 2 + m_ODEBody1->getLocalPos().y(), m_tool0->m_hapticPointFinger->m_sphereProxy->getLocalPos().z()+ 0.1);
+				//cout << m_tool0->m_hapticPointThumb->m_sphereProxy->getLocalPos().z() << " " << m_tool0->m_hapticPointThumb->m_sphereProxy->getLocalPos().z() << "\r";
+			}
 			//	if (gap < boxSize)
 			flagLoad = true;
 		}
 		else
 		{
+			meshForceThumb->setLocalPos(m_tool0->m_hapticPointThumb->m_sphereGoal->getLocalPos());
+			meshForceFinger->setLocalPos(m_tool0->m_hapticPointFinger->m_sphereGoal->getLocalPos());
+			//m_tool0->setGripperWorkspaceScale(1);
 			gap = boxSize;
 			//m_ODEBody1->setLocalPos(cVector3d(0.0, 0.0, boxSize / 2));
 		}
@@ -707,7 +771,7 @@ void cTrial::initTrial()
 	// set trial properties
 	kSpring = springCond[trialNumber];
 	kHandle = handleCond[trialNumber];
-	m_ODEBody1->m_material->setStiffness(kHandle);
+	m_ODEBody1->m_material->setStiffness(1000);
 	kVisual = visualCond[trialNumber];
 	kBoundary = boundaryCond[trialNumber];
 	if (flagBoundary)
@@ -819,27 +883,55 @@ void cTrial::updateProtocol()
 			m_ODEBody1->m_material->setBlueNavy();
 		}
 		else
-			if (m_ODEBody1->getLocalPos().z() < boxSize / 2 + 0.0003 && trialState != 3)
+			if (!forceControl)
 			{
-				expState = 1;
-				//loggingThread->stop();
-				//delete &loggingThread;
-				loggingRunning = false;
-				appendToFile = true;
-				cout << "stop logging" << endl;
-				labelTrialInstructions->setText("Cube Slipped\n Start over");
-				//copy the data file and call it bad at the end;
+				if (m_ODEBody1->getLocalPos().z() < boxSize / 2 + 0.0003 && trialState != 3)
+				{
+					expState = 1;
+					//loggingThread->stop();
+					//delete &loggingThread;
+					loggingRunning = false;
+					appendToFile = true;
+					cout << "stop logging" << endl;
+					labelTrialInstructions->setText("Cube Slipped\n Start over");
+					//copy the data file and call it bad at the end;
+				}
+				else if (gap < boxSize / 5 && trialState != 3)
+				{
+					expState = 1;
+					//loggingThread->stop();
+					//delete &loggingThread;
+					loggingRunning = false;
+					appendToFile = true;
+					cout << "stop logging" << endl;
+					labelTrialInstructions->setText("Cube Broke\n Start over");
+					//copy the data file and call it bad at the end;
+				}
 			}
-			else if (gap < boxSize / 5 && trialState != 3)
+			else
 			{
-				expState = 1;
-				//loggingThread->stop();
-				//delete &loggingThread;
-				loggingRunning = false;
-				appendToFile = true;
-				cout << "stop logging" << endl;
-				labelTrialInstructions->setText("Cube Broke\n Start over");
-				//copy the data file and call it bad at the end;
+				if (m_ODEBody1->getLocalPos().z() < boxSize / 2 + 0.0003 && trialState != 3)
+				{
+					expState = 1;
+					//loggingThread->stop();
+					//delete &loggingThread;
+					loggingRunning = false;
+					appendToFile = true;
+					cout << "stop logging" << endl;
+					labelTrialInstructions->setText("Cube Slipped\n Start over");
+					//copy the data file and call it bad at the end;
+				}
+				else if (m_tool0->getGripperForce()>12 && trialState != 3)
+				{
+					expState = 1;
+					//loggingThread->stop();
+					//delete &loggingThread;
+					loggingRunning = false;
+					appendToFile = true;
+					cout << "stop logging" << endl;
+					labelTrialInstructions->setText("Cube Broke\n Start over");
+					//copy the data file and call it bad at the end;
+				}
 			}
 		switch (trialState)
 		{

@@ -234,6 +234,9 @@ public:
 	int trialState = 1;
 	int trialNumber = 115;
 	int liftingNumber;
+	bool forceControl = false;
+	cMesh* meshForceFinger;
+	cMesh* meshForceThumb;
 	/*--------------------------------------------------------------------*/
 };
 
