@@ -603,8 +603,12 @@ void cTrial::updateHaptics()
 		/*	if(((m_ODEBody1->getLocalPos().z()) - boxSize / 2)>0)
 			m_tools[i]->setDeviceGlobalForce(cVector3d(0.0, 0.0, -(m_ODEBody1->getGlobalPos().z() - boxSize / 2) * 30));*/
 		if (m_tools[i]->getGripperForce() > 0)
-			m_tools[i]->setGripperForce(kHandle*((-m_tool0->m_hapticPointThumb->getLocalPosProxy().y() + m_tool0->m_hapticPointThumb->getLocalPosGoal().y()) + (m_tool0->m_hapticPointFinger->getLocalPosProxy().y() - m_tool0->m_hapticPointFinger->getLocalPosGoal().y())));
-
+		{
+			gripForce = kHandle*((-m_tool0->m_hapticPointThumb->getLocalPosProxy().y() + m_tool0->m_hapticPointThumb->getLocalPosGoal().y()) + (m_tool0->m_hapticPointFinger->getLocalPosProxy().y() - m_tool0->m_hapticPointFinger->getLocalPosGoal().y()));
+				m_tools[i]->setGripperForce(gripForce);
+		}
+		else
+			gripForce = 0;
 		if (flagLoad)
 		{
 
@@ -921,7 +925,7 @@ void cTrial::updateProtocol()
 					labelTrialInstructions->setText("Cube Slipped\n Start over");
 					//copy the data file and call it bad at the end;
 				}
-				else if (m_tool0->getGripperForce() > 12 && trialState != 3)
+				else if (gripForce > 10 && trialState != 3)
 				{
 					expState = 1;
 					//loggingThread->stop();

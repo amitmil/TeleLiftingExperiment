@@ -239,6 +239,8 @@ public:
 	cShapeSphere* meshFingerSphere;
 	cMesh* meshForceThumb;
 	cShapeSphere* meshThumbrSphere;
+	double gripForce = 0;
+
 	/*--------------------------------------------------------------------*/
 };
 
