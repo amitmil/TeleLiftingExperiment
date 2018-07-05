@@ -138,7 +138,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>../../../src;../../../external/ODE/include;../../../../../src;../../../../../external/Eigen;../../../../../external/glew/include;../../../../../extras/glfw/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(CHAI3D)/modules/ODE/src;$(CHAI3D)/modules/ODE/external/ODE/include;$(CHAI3D)/src;$(CHAI3D)/external/Eigen;$(CHAI3D)/external/glew/include;$(CHAI3D)/extras/glfw/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN64;_DEBUG;_CONSOLE;_MSVC;_CRT_SECURE_NO_WARNINGS;X86_64_SYSTEM;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -159,7 +159,7 @@
       <AdditionalDependencies>glfw.lib;OpenGL32.lib;glu32.lib;chai3d.lib;chai3d-ODE.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(ProjectName).exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>../../../lib/$(Configuration)/$(Platform);../../../../../lib/$(Configuration)/$(Platform);../../../../../extras/glfw/lib/$(Configuration)/$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(CHAI3D)/modules/ODE/lib/$(Configuration)/$(Platform);$(CHAI3D)/lib/$(Configuration)/$(Platform);$(CHAI3D)/extras/glfw/lib/$(Configuration)/$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>msvcrt.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>$(TargetDir)$(TargetName).pdb</ProgramDatabaseFile>

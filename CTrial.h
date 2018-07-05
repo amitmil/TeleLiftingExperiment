@@ -236,7 +236,9 @@ public:
 	int liftingNumber;
 	bool forceControl = false;
 	cMesh* meshForceFinger;
+	cShapeSphere* meshFingerSphere;
 	cMesh* meshForceThumb;
+	cShapeSphere* meshThumbrSphere;
 	/*--------------------------------------------------------------------*/
 };
 
