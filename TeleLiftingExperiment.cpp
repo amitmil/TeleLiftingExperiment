@@ -357,6 +357,7 @@ int main(int argc, char* argv[])
 
 		// set stereo mode
 	m_trial->m_camera->setStereoMode(stereoMode);
+	//m_trial->m_camera->setUseMultipassTransparency(true);
 
 	// set object stiffness in demos
 	//m_trial->setStiffness(maxStiffness);

@@ -100,7 +100,6 @@ cTrial::cTrial(const string a_resourceRoot,
 	m_camera->setUseMultipassTransparency(true);
 	m_camera->setStereoEyeSeparation(0.005);
 	m_camera->setStereoFocalLength(0.7);
-
 	// create a positional light
 	m_light0 = new cSpotLight(m_world);
 	m_world->addChild(m_light0);                      // attach light to camera
@@ -935,7 +934,7 @@ bool cTrial::checkSlippedBroke()
 	flagSlippedBroke = false;
 	if (!forceControl)
 	{
-		if ((m_ODEBody1->getLocalPos().z() < boxSize / 2 + 0.0003 || gap > boxSize * 4 / 5) && trialState != 3)
+		if ((m_ODEBody1->getLocalPos().z() < boxSize / 2 + 0.0003 || gap > boxSize * 5 / 6) && trialState != 3)
 		{
 			expState = 1;
 			labelTrialInstructions->setShowEnabled(true);
@@ -962,7 +961,7 @@ bool cTrial::checkSlippedBroke()
 			flagSlippedBroke = true;
 			return true;
 		}
-		else if (gripForce > 8 && trialState != 3)
+		else if (gripForce > 10 && trialState != 3)
 		{
 			expState = 1;
 			labelTrialInstructions->setShowEnabled(true);
