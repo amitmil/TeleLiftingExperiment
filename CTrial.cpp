@@ -688,7 +688,7 @@ void cTrial::updateHaptics()
 			{
 				gap = (m_tool0->m_hapticPointFinger->m_sphereGoal->getLocalPos() - m_tool0->m_hapticPointThumb->m_sphereGoal->getLocalPos()).length();
 				//gap = boxSize + m_ODEBody1->m_material->getStiffness() / kHandle *(gap - boxSize);	
-				gap = boxSize + kHandle *(gap - boxSize)/ m_ODEBody1->m_material->getStiffness();
+				gap = boxSize + kHandle *(gap - boxSize) / m_ODEBody1->m_material->getStiffness();
 
 				meshForceThumb->setLocalPos(cVector3d(m_tool0->m_hapticPointThumb->m_sphereGoal->getLocalPos().x(), m_ODEBody1->getLocalPos().y() - gap / 2, m_tool0->m_hapticPointThumb->m_sphereProxy->getLocalPos().z() + 0.1));
 				meshForceFinger->setLocalPos(cVector3d(m_tool0->m_hapticPointFinger->m_sphereGoal->getLocalPos().x(), m_ODEBody1->getLocalPos().y() + gap / 2, m_tool0->m_hapticPointFinger->m_sphereProxy->getLocalPos().z() + 0.1));
@@ -789,7 +789,7 @@ void cTrial::initTrial()
 	m_ODEBody1->m_material->setStiffness(1000);
 	kVisual = visualCond[trialNumber];
 	kBoundary = boxSize / 2;
-	kSpring = springCond[trialNumber];
+	kSpring = springCond[trialNumber] / 2 + 15;
 	m_boundary->setShowEnabled(false);
 
 	if (kVisual == 1) // rigid cube
@@ -817,16 +817,21 @@ void cTrial::updateProtocol()
 	switch (expState)
 	{
 	case 1: // Setup Next Trial
-		if (trialNumber < 10)
+	/*	if (trialNumber < 10)
 			labelTrialInstructions->setShowEnabled(true);
 		if (trialNumber > 10)
-			labelTrialInstructions->setShowEnabled(false);
-		if (!appendToFile  && !flagSlippedBroke)
+			labelTrialInstructions->setShowEnabled(false);*/
+		if (!appendToFile && !flagSlippedBroke)
 		{
 			labelTrialInstructions->setText("Align the middle\n of the cube with\n the bottom target");
+			cout << endl << "starting Trial: " << trialNumber + 1 << endl;
+			cout << "k spring: " << kSpring << endl;
+			cout << "k handle: " << kHandle << endl;
+			cout << "k visual: " << kVisual << endl;
 		}
 		initTrial();
-		cout << endl << "starting Trial: " << trialNumber + 1 << endl << endl;
+		cout << "nBreak: " << nBreak << endl;
+		cout << "nSlip: " << nSlip << endl << endl;
 		expState += 1;
 
 		break;
@@ -923,6 +928,8 @@ void cTrial::updateProtocol()
 		break;
 	case 5:
 		trialNumber += 1;
+		nBreak = 0;
+		nSlip = 0;
 		expState = 1;
 		loggingRunning = false;
 		appendToFile = false;
@@ -934,19 +941,21 @@ bool cTrial::checkSlippedBroke()
 	flagSlippedBroke = false;
 	if (!forceControl)
 	{
-		if ((m_ODEBody1->getLocalPos().z() < boxSize / 2 + 0.0003 || gap > boxSize * 5 / 6) && trialState != 3)
+		if ((m_ODEBody1->getLocalPos().z() < boxSize / 2 + 0.0003 || gap > boxSize * 9 / 10) && trialState != 3)
 		{
 			expState = 1;
 			labelTrialInstructions->setShowEnabled(true);
 			labelTrialInstructions->setText("Cube Slipped\n Start over");
 			flagSlippedBroke = true;
+			nSlip++;
 			return true;
 		}
-		else if (gap < boxSize / 5 && trialState != 3)
+		else if (gap < boxSize / 6 && trialState != 3)
 		{
 			expState = 1;
 			labelTrialInstructions->setShowEnabled(true);
 			labelTrialInstructions->setText("Cube Broke\n Start over");
+			nBreak++;
 			flagSlippedBroke = true;
 			return true;
 		}
@@ -959,13 +968,15 @@ bool cTrial::checkSlippedBroke()
 			labelTrialInstructions->setShowEnabled(true);
 			labelTrialInstructions->setText("Cube Slipped\n Start over");
 			flagSlippedBroke = true;
+			nSlip++;
 			return true;
 		}
-		else if (gripForce > 10 && trialState != 3)
+		else if (gripForce > 12 && trialState != 3)
 		{
 			expState = 1;
 			labelTrialInstructions->setShowEnabled(true);
 			labelTrialInstructions->setText("Cube Broke\n too much force\n  Start over");
+			nBreak++;
 			flagSlippedBroke = true;
 			return true;
 		}
@@ -993,7 +1004,7 @@ void cTrial::updateLogging(void)
 			<< "thumb_goal_x\t" << "thumb_goal_y\t" << "thumb_goal_z\t"
 			<< "cube_x\t" << "cube_y\t" << "cube_z\t"
 			<< "force_x\t" << "force_y\t" << "force_z\t" << "force_grip\t"
-			<< "lift_number\t" << "kSpring\t" << "kHandle\t" << "kBoundary\t" << "kVisual" << endl;
+			<< "lift_number\t" << "kSpring\t" << "kHandle\t" << "kBoundary\t" << "kVisual\t" << "break\t" << "slip" << endl;
 		logClock.reset();
 		logClock.start();
 	}
@@ -1014,7 +1025,7 @@ void cTrial::updateLogging(void)
 			<< m_tool0->m_hapticPointThumb->m_sphereGoal->getLocalPos().x() << "\t" << m_tool0->m_hapticPointThumb->m_sphereGoal->getLocalPos().y() << "\t" << m_tool0->m_hapticPointThumb->m_sphereGoal->getLocalPos().z() << "\t"
 			<< m_ODEBody1->getLocalPos().x() << "\t" << m_ODEBody1->getLocalPos().y() << "\t" << m_ODEBody1->getLocalPos().z() << "\t"
 			<< m_tool0->getDeviceGlobalForce().x() << "\t" << m_tool0->getDeviceGlobalForce().y() << "\t" << m_tool0->getDeviceGlobalForce().z() << "\t" << m_tool0->getGripperForce() << "\t"
-			<< liftingNumber << "\t" << kSpring << "\t" << kHandle << "\t" << kBoundary << "\t" << kVisual << endl;
+			<< liftingNumber << "\t" << kSpring << "\t" << kHandle << "\t" << kBoundary << "\t" << kVisual << "\t" << nBreak << "\t" << nSlip << endl;
 	}
 	trialFile.close();
 }

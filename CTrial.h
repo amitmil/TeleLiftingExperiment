@@ -203,7 +203,8 @@ public:
 	double loadForce = 0;
 	double boundary = 0.05;
 	bool loggingRunning = false;
-
+	int nBreak = 0;
+	int nSlip = 0;
 	bool flagBoundary = false;
 	/*--------------------------------------------------------------------*/
 	/* EXPERIMENT RELATED STUFF */
