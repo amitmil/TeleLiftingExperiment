@@ -87,6 +87,8 @@ public:
 	virtual void updateHaptics();
 	//! update protocol
 	virtual void updateProtocol();
+	bool checkSlippedBroke();
+	bool flagSlippedBroke;
 	//! update logging
 	void updateLogging(void);
 	//! Update graphics

@@ -366,8 +366,8 @@ cTrial::cTrial(const string a_resourceRoot,
 	mat.setGreen();
 	//mat.m_specular.set(0.0, 0.0, 0.0);
 	mat.setStiffness(1500);
-	mat.setDynamicFriction(0.7);
-	mat.setStaticFriction(0.6);
+	mat.setDynamicFriction(2.0);
+	mat.setStaticFriction(2.0);
 	object1->setMaterial(mat);
 
 	// add mesh to ODE object
@@ -435,7 +435,10 @@ cTrial::cTrial(const string a_resourceRoot,
 void cTrial::updateGraphics(int a_width, int a_height)
 {
 	// update haptic and graphic rate data
-	labelTrialInstructions->setLocalPos((int)(0.4 * (a_width - labelTrialInfo->getWidth())), 0.8*a_height - labelTrialInfo->getHeight());
+	if (expState < 4)
+		labelTrialInstructions->setLocalPos((int)(0.4 * (a_width - labelTrialInfo->getWidth())), 0.8*a_height - labelTrialInfo->getHeight());
+	else
+		labelTrialInstructions->setLocalPos((int)(0.65 * (a_width - labelTrialInfo->getWidth())), 0.95*a_height - labelTrialInfo->getHeight());
 	// update position of label
 	labelTrialInfo->setLocalPos((int)(0.1 * (a_width - labelTrialInfo->getWidth())), 0.9*a_height - labelTrialInfo->getHeight());
 	// update haptic and graphic rate data
@@ -465,7 +468,7 @@ void cTrial::updateGraphics(int a_width, int a_height)
 	labelHaptics->setLocalPos((int)(0.65 * (a_width - labelRates->getWidth())), 200);
 	// update value of scope
 	scope->setSignalValues(-m_tool0->getDeviceGlobalForce().z(), m_ODEBody1->getGlobalPos().z()*kSpring);
-	scope2->setSignalValues(-m_tool0->getDeviceGlobalForce().z(), m_tool0->getGripperForce(), 5.0, 12.0);
+	scope2->setSignalValues(-m_tool0->getDeviceGlobalForce().z(), m_tool0->getGripperForce(), 4.0, 8.0);
 	//cout << "k: " << m_ODEBody1->getImageModel()->m_material->getStiffness() << " gap: " << (m_tool0->m_hapticPointFinger->getLocalPosProxy() - m_tool0->m_hapticPointFinger->getLocalPosGoal()).length() << endl;
 
 	if (kVisual == 2 && flagChangeBox)
@@ -605,7 +608,7 @@ void cTrial::updateHaptics()
 		if (m_tools[i]->getGripperForce() > 0)
 		{
 			gripForce = kHandle*((-m_tool0->m_hapticPointThumb->getLocalPosProxy().y() + m_tool0->m_hapticPointThumb->getLocalPosGoal().y()) + (m_tool0->m_hapticPointFinger->getLocalPosProxy().y() - m_tool0->m_hapticPointFinger->getLocalPosGoal().y()));
-				m_tools[i]->setGripperForce(gripForce);
+			m_tools[i]->setGripperForce(gripForce);
 		}
 		else
 			gripForce = 0;
@@ -685,7 +688,9 @@ void cTrial::updateHaptics()
 			else
 			{
 				gap = (m_tool0->m_hapticPointFinger->m_sphereGoal->getLocalPos() - m_tool0->m_hapticPointThumb->m_sphereGoal->getLocalPos()).length();
-				gap = boxSize + m_ODEBody1->m_material->getStiffness() / kHandle *(gap - boxSize);
+				//gap = boxSize + m_ODEBody1->m_material->getStiffness() / kHandle *(gap - boxSize);	
+				gap = boxSize + kHandle *(gap - boxSize)/ m_ODEBody1->m_material->getStiffness();
+
 				meshForceThumb->setLocalPos(cVector3d(m_tool0->m_hapticPointThumb->m_sphereGoal->getLocalPos().x(), m_ODEBody1->getLocalPos().y() - gap / 2, m_tool0->m_hapticPointThumb->m_sphereProxy->getLocalPos().z() + 0.1));
 				meshForceFinger->setLocalPos(cVector3d(m_tool0->m_hapticPointFinger->m_sphereGoal->getLocalPos().x(), m_ODEBody1->getLocalPos().y() + gap / 2, m_tool0->m_hapticPointFinger->m_sphereProxy->getLocalPos().z() + 0.1));
 
@@ -817,7 +822,7 @@ void cTrial::updateProtocol()
 			labelTrialInstructions->setShowEnabled(true);
 		if (trialNumber > 10)
 			labelTrialInstructions->setShowEnabled(false);
-		if (!appendToFile)
+		if (!appendToFile  && !flagSlippedBroke)
 		{
 			labelTrialInstructions->setText("Align the middle\n of the cube with\n the bottom target");
 		}
@@ -829,18 +834,18 @@ void cTrial::updateProtocol()
 	case 2: // wait for subject to reach starting pos
 		if (fabs(m_ODEBody1->getLocalPos().z() - downTarget) < 0.01)
 			expState += 1;
+		if (m_ODEBody1->getLocalPos().z() > 2 * boxSize)
+			checkSlippedBroke();
 		break;
 	case 3: // wait for subject to reach stay at starting pos for a random time between 100-200 milliseconds
 	{
 		//cout << "------" << endl;
 		labelTrialInstructions->setText("Get Ready");
-
 		double waittime = (rand() % 100 + 101) / 100;
 		double time0 = logClock.getCurrentTimeSeconds();
-		while ((logClock.getCurrentTimeSeconds() - time0) < waittime)
-		{
-			cout << "now: " << logClock.getCurrentTimeSeconds() << " t0: " << time0 << " wait: " << waittime << "\r";
-		}
+		while ((logClock.getCurrentTimeSeconds() - time0) < waittime);
+		if (checkSlippedBroke())
+			break;
 		if (fabs(m_ODEBody1->getLocalPos().z() - downTarget) < 0.005)
 		{
 			box->m_material->setGreen();
@@ -885,57 +890,11 @@ void cTrial::updateProtocol()
 			m_ODEBody1->m_material->setBlueNavy();
 		}
 		else
-			if (!forceControl)
+			if (checkSlippedBroke())
 			{
-				if (m_ODEBody1->getLocalPos().z() < boxSize / 2 + 0.0003 && trialState != 3)
-				{
-					expState = 1;
-					//loggingThread->stop();
-					//delete &loggingThread;
-					loggingRunning = false;
-					appendToFile = true;
-					cout << "stop logging" << endl;
-					labelTrialInstructions->setShowEnabled(true);
-					labelTrialInstructions->setText("Cube Slipped\n Start over");
-					//copy the data file and call it bad at the end;
-				}
-				else if (gap < boxSize / 5 && trialState != 3)
-				{
-					expState = 1;
-					//loggingThread->stop();
-					//delete &loggingThread;
-					loggingRunning = false;
-					appendToFile = true;
-					cout << "stop logging" << endl;
-					labelTrialInstructions->setShowEnabled(true);
-					labelTrialInstructions->setText("Cube Broke\n Start over");
-					//copy the data file and call it bad at the end;
-				}
-			}
-			else
-			{
-				if (m_ODEBody1->getLocalPos().z() < boxSize / 2 + 0.0003 && trialState != 3)
-				{
-					expState = 1;
-					//loggingThread->stop();
-					//delete &loggingThread;
-					loggingRunning = false;
-					appendToFile = true;
-					cout << "stop logging" << endl;
-					labelTrialInstructions->setText("Cube Slipped\n Start over");
-					//copy the data file and call it bad at the end;
-				}
-				else if (gripForce > 10 && trialState != 3)
-				{
-					expState = 1;
-					//loggingThread->stop();
-					//delete &loggingThread;
-					loggingRunning = false;
-					appendToFile = true;
-					cout << "stop logging" << endl;
-					labelTrialInstructions->setText("Cube Broke\n too much force\n  Start over");
-					//copy the data file and call it bad at the end;
-				}
+				loggingRunning = false;
+				appendToFile = true;
+				break;
 			}
 		switch (trialState)
 		{
@@ -970,6 +929,49 @@ void cTrial::updateProtocol()
 		appendToFile = false;
 		break;
 	}
+}
+bool cTrial::checkSlippedBroke()
+{
+	flagSlippedBroke = false;
+	if (!forceControl)
+	{
+		if ((m_ODEBody1->getLocalPos().z() < boxSize / 2 + 0.0003 || gap > boxSize * 4 / 5) && trialState != 3)
+		{
+			expState = 1;
+			labelTrialInstructions->setShowEnabled(true);
+			labelTrialInstructions->setText("Cube Slipped\n Start over");
+			flagSlippedBroke = true;
+			return true;
+		}
+		else if (gap < boxSize / 5 && trialState != 3)
+		{
+			expState = 1;
+			labelTrialInstructions->setShowEnabled(true);
+			labelTrialInstructions->setText("Cube Broke\n Start over");
+			flagSlippedBroke = true;
+			return true;
+		}
+	}
+	else
+	{
+		if ((m_ODEBody1->getLocalPos().z() < boxSize / 2 + 0.0003 || gripForce < 3) && trialState != 3)
+		{
+			expState = 1;
+			labelTrialInstructions->setShowEnabled(true);
+			labelTrialInstructions->setText("Cube Slipped\n Start over");
+			flagSlippedBroke = true;
+			return true;
+		}
+		else if (gripForce > 8 && trialState != 3)
+		{
+			expState = 1;
+			labelTrialInstructions->setShowEnabled(true);
+			labelTrialInstructions->setText("Cube Broke\n too much force\n  Start over");
+			flagSlippedBroke = true;
+			return true;
+		}
+	}
+	return false;
 }
 void cTrial::updateLogging(void)
 {
