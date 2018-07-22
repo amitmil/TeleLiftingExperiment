@@ -970,7 +970,7 @@ bool cTrial::checkSlippedBroke()
 			nSlip++;
 			return true;
 		}
-		else if (gripForce > 12 && trialState != 3)
+		else if (gripForce > highGrip && trialState != 3)
 		{
 			expState = 1;
 			labelTrialInstructions->setShowEnabled(true);

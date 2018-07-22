@@ -243,8 +243,8 @@ public:
 	cMesh* meshForceThumb;
 	cShapeSphere* meshThumbrSphere;
 	double gripForce = 0;
-	double lowGrip = 2;
-	double highGrip = 8;
+	double lowGrip = 2 + 1/3;
+	double highGrip = 11 + 2/3;
 	double slipGap = boxSize * 5 / 6;
 	double breakGap = boxSize / 6;
 	/*--------------------------------------------------------------------*/
