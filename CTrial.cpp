@@ -315,11 +315,10 @@ cTrial::cTrial(const string a_resourceRoot,
 	m_camera->m_frontLayer->addChild(scope);
 	scope->setSize(300, 200);
 	scope->setRange(0.0, 20.0);
-	scope->setSignalEnabled(true, true, false, false);
+	scope->setSignalEnabled(true, true, true, true);
 	scope->setShowPanel(true);
 	scope->m_colorSignal0.setRedCrimson();
 	scope->m_colorSignal1.setGreen();
-	scope->m_colorSignal2.setYellow();
 	scope->setShowEnabled(false);
 
 	scope2 = new cScope();
@@ -466,8 +465,8 @@ void cTrial::updateGraphics(int a_width, int a_height)
 	// update position of label
 	labelHaptics->setLocalPos((int)(0.65 * (a_width - labelRates->getWidth())), 200);
 	// update value of scope
-	scope->setSignalValues(-m_tool0->getDeviceGlobalForce().z(), m_ODEBody1->getGlobalPos().z()*kSpring);
-	scope2->setSignalValues(-m_tool0->getDeviceGlobalForce().z(), m_tool0->getGripperForce(), 4.0, 8.0);
+	scope->setSignalValues(-m_tool0->getDeviceGlobalForce().z(), gap * 500, slipGap * 500,breakGap*500);
+	scope2->setSignalValues(-m_tool0->getDeviceGlobalForce().z(), m_tool0->getGripperForce(), lowGrip, highGrip);
 	//cout << "k: " << m_ODEBody1->getImageModel()->m_material->getStiffness() << " gap: " << (m_tool0->m_hapticPointFinger->getLocalPosProxy() - m_tool0->m_hapticPointFinger->getLocalPosGoal()).length() << endl;
 
 	if (kVisual == 2 && flagChangeBox)
@@ -786,10 +785,10 @@ void cTrial::initTrial()
 	// set trial properties
 	kSpring = springCond[trialNumber];
 	kHandle = handleCond[trialNumber];
-	m_ODEBody1->m_material->setStiffness(1000);
+	m_ODEBody1->m_material->setStiffness(700);
 	kVisual = visualCond[trialNumber];
 	kBoundary = boxSize / 2;
-	kSpring = springCond[trialNumber] / 2 + 15;
+	kSpring = springCond[trialNumber];
 	m_boundary->setShowEnabled(false);
 
 	if (kVisual == 1) // rigid cube
@@ -941,7 +940,7 @@ bool cTrial::checkSlippedBroke()
 	flagSlippedBroke = false;
 	if (!forceControl)
 	{
-		if ((m_ODEBody1->getLocalPos().z() < boxSize / 2 + 0.0003 || gap > boxSize * 9 / 10) && trialState != 3)
+		if ((m_ODEBody1->getLocalPos().z() < boxSize / 2 + 0.0003 || gap > slipGap) && trialState != 3)
 		{
 			expState = 1;
 			labelTrialInstructions->setShowEnabled(true);
@@ -950,7 +949,7 @@ bool cTrial::checkSlippedBroke()
 			nSlip++;
 			return true;
 		}
-		else if (gap < boxSize / 6 && trialState != 3)
+		else if (gap < breakGap && trialState != 3)
 		{
 			expState = 1;
 			labelTrialInstructions->setShowEnabled(true);
@@ -962,7 +961,7 @@ bool cTrial::checkSlippedBroke()
 	}
 	else
 	{
-		if ((m_ODEBody1->getLocalPos().z() < boxSize / 2 + 0.0003 || gripForce < 3) && trialState != 3)
+		if ((m_ODEBody1->getLocalPos().z() < boxSize / 2 + 0.0003 || gripForce < lowGrip) && trialState != 3)
 		{
 			expState = 1;
 			labelTrialInstructions->setShowEnabled(true);

@@ -351,7 +351,7 @@ int main(int argc, char* argv[])
 	m_trial->trialNumber -= 1;
 
 	cout << "Boundary condition (1/0):" << endl;
-	cin >> m_trial->flagBoundary;
+	cin >> m_trial->forceControl;
 	cout << endl << endl;
 	//	m_trial->subjectName = "testing";
 
