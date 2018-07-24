@@ -926,6 +926,7 @@ void cTrial::updateProtocol()
 		}
 		break;
 	case 5:
+		if (trialNumber<127)
 		trialNumber += 1;
 		nBreak = 0;
 		nSlip = 0;
